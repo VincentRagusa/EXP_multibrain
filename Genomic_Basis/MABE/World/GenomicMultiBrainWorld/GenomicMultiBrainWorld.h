@@ -15,12 +15,9 @@
 class GenomicMultiBrainWorld : public AbstractWorld {
 
 public:
-  static std::shared_ptr<ParameterLink<int>> modePL;
-  static std::shared_ptr<ParameterLink<int>> numberOfOutputsPL;
-  static std::shared_ptr<ParameterLink<int>> evaluationsPerGenerationPL;
 
   static std::shared_ptr<ParameterLink<std::string>> groupNamePL;
-  static std::shared_ptr<ParameterLink<std::string>> brainNamePL;
+  static std::shared_ptr<ParameterLink<std::string>> genomeNamePL;
 
   GenomicMultiBrainWorld(std::shared_ptr<ParametersTable> PT_ = nullptr);
 
