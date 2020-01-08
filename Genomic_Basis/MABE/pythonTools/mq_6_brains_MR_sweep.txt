@@ -1,0 +1,38 @@
+REPS = 101 300
+
+VAR = indel GENOME_CIRCULAR-mutationIndelRate
+VAR = ptoff GENOME_CIRCULAR-mutationPointOffsetRate
+
+
+CONDITIONS = indel=0.005   ptoff=0.005
+CONDITIONS = indel=0.0005   ptoff=0.0005
+CONDITIONS = indel=0.00005   ptoff=0.00005
+CONDITIONS = indel=0.000005   ptoff=0.000005
+CONDITIONS = indel=0.0000005   ptoff=0.0000005
+
+#EXCEPT = EAM=0 AE=0
+
+SETTINGS = settings.cfg,settings_organism.cfg,settings_world.cfg
+
+#OTHERFILES = my_file.txt
+
+
+#PLF = MASTER = 'LOD_organisms.csv'
+#PLF = some_var = best 5 by ID from { 'LOD_organisms_{{rep}}.csv' }
+#PLF = MASTER = collapse some_var
+-----
+JOBNAME = NONE
+
+EXECUTABLE = ./mabe
+#EXECUTABLE = mabe.exe
+
+-----
+
+# HPCC
+HPCC_LONGJOB = FALSE
+HPCC_PARAMETERS = #SBATCH -C intel18|intel16|intel14
+HPCC_PARAMETERS = #SBATCH --ntasks=1
+HPCC_PARAMETERS = #SBATCH --cpus-per-task=1
+HPCC_PARAMETERS = #SBATCH --time=03:50:00
+HPCC_PARAMETERS = #SBATCH --mem=2G
+HPCC_PARAMETERS = #SBATCH --mail-type=FAIL
