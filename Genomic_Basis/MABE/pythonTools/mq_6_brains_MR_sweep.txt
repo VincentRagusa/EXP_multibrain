@@ -1,4 +1,4 @@
-REPS = 101 300
+REPS = 101 200
 
 VAR = indel GENOME_CIRCULAR-mutationIndelRate
 VAR = ptoff GENOME_CIRCULAR-mutationPointOffsetRate
