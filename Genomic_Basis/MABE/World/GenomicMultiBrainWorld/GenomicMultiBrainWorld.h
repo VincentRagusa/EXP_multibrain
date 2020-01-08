@@ -19,8 +19,10 @@ public:
   static std::shared_ptr<ParameterLink<std::string>> groupNamePL;
   static std::shared_ptr<ParameterLink<std::string>> genomeNamePL;
   static std::shared_ptr<ParameterLink<int>> gameCodePL;
+  
   int gameCode;
   std::vector<int> site_symbol_counts = std::vector<int>(256, 0);
+  std::vector<std::string> genomeNames;
 
   GenomicMultiBrainWorld(std::shared_ptr<ParametersTable> PT_ = nullptr);
 
