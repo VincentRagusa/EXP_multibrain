@@ -26,7 +26,8 @@ with open("MABE/pop.csv", 'r') as inputfile:
             Xx[nameprefix].append(float(line.strip().split(",")[datamap[nameprefix+"variance_AVE"]]))
             Yy[nameprefix].append(float(line.strip().split(",")[datamap[nameprefix+"mean_AVE"]]))
 #         if j > 1000: break
-            
+YMAX = max([max(Yy[key]) for key in Yy])
+XMAX = max([max(Xx[key]) for key in Xx])          
 for nameprefix in ["", "A::", "B::", "C::", "D::", "E::", "F::"]:         
     plt.plot(Xx[nameprefix],Yy[nameprefix], label="."+nameprefix)
 plt.legend()
@@ -66,15 +67,14 @@ fig = plt.figure(figsize=(20,20))
 ax = fig.gca(projection='3d')
 
 # Make data.
-X = np.arange(20, 38, 0.05)
-Y = np.arange(20, 38, 0.05)
+X = np.arange(0, XMAX, 0.05)
+Y = np.arange(0, YMAX, 0.05)
 X, Y = np.meshgrid(X, Y)
 R = fn(X,Y)
 Z = R
 
 # Plot the surface.
-surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm,
-                       linewidth=0, antialiased=False, rcount=200,ccount=200)
+surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm, linewidth=0, antialiased=False, rcount=100,ccount=100, alpha=0.90)
 
 # Customize the z axis.
 # ax.set_zlim(-1.01, 1.01)
@@ -91,8 +91,8 @@ for nameprefix in ["", "A::", "B::", "C::", "D::", "E::", "F::"]:
     print(nameprefix)
     ax.plot(Xx[nameprefix],Yy[nameprefix], zs = [fn(p[0],p[1]) for p in zip(Xx[nameprefix],Yy[nameprefix]) ], label="."+nameprefix, linewidth = 5)
 
-plt.xlim(32,38)
-plt.ylim(32,38)
+plt.xlim(0,XMAX)
+plt.ylim(0,YMAX)
 plt.show()
 # rotate the axes and update
 # for angle in range(0, 360):

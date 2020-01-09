@@ -60,23 +60,26 @@ GenomicMultiBrainWorld::evaluateSolo(std::shared_ptr<Organism> org, int analyze,
     }
     else if (gameCode == 1){
       std::fill(site_symbol_counts.begin(), site_symbol_counts.end(), 0);
-      for (auto site:genome->sites){
+      for (auto site:genome->sites){ //TODO BUG fix the last site in the genome bug for this game
         ++site_symbol_counts[site];
       }
       auto max = *std::max_element(site_symbol_counts.begin(), site_symbol_counts.end());
       score = 5000 - max; //5000 is the assumed genome length
     }
     else if (gameCode == 2){
-      auto mean = std::accumulate(genome->sites.begin(), genome->sites.end(), 0.0) / genome->sites.size();
+      auto mean = std::accumulate(genome->sites.begin(), genome->sites.end()-1, 0.0) / (genome->sites.size()-1); //last site is borked
       double variance = 0;
-      for (auto site:genome->sites){
-        variance += std::pow(site-mean, 2);
+      // for (auto site:genome->sites){
+      for (int bla = 0; bla < genome->sites.size()-1; ++bla){
+        // variance += std::pow(site-mean, 2);
+        variance += std::pow(genome->sites[bla]-mean, 2);
       }
-      variance /= genome->sites.size();
+      variance /= genome->sites.size()-1;
       // -------------
-      score = (std::sqrt(variance) * std::sin(std::sin(mean)*variance)) + (mean*2); //max score should be 256 +/- a bit for veering off into variance land
+      // score = (std::sqrt(variance) * std::sin(std::sin(mean)*variance)) + (mean*2); //max score should be 256 +/- a bit for veering off into variance land
       // (√x)*sin(sin(y)*x) + y/2
-      // score = (4*std::tanh(variance) * std::sin(std::sin(mean)*variance)) + (mean/2);
+      // score = (std::tanh(variance) * std::sin(std::sin(mean)*variance)) + (mean*2);
+      score = std::sin(8*variance)*std::sqrt(variance)*std::sin(std::sin(mean)*variance) + (mean*2);
       org->dataMap.append("mean", mean); //average each mean together
       org->dataMap.append(name+"mean", mean); //record individual mean
       org->dataMap.append("variance", variance); //average each variance together
