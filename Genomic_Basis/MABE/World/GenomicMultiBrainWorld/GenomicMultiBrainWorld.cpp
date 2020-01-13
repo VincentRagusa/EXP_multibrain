@@ -46,6 +46,11 @@ GenomicMultiBrainWorld::GenomicMultiBrainWorld(std::shared_ptr<ParametersTable> 
 void
 GenomicMultiBrainWorld::evaluateSolo(std::shared_ptr<Organism> org, int analyze, int visualize, int debug) {
   for (auto name : genomeNames) {
+    // if (Global::update == 0){
+    //   //randomize genomes
+    //   org->genomes[name]->fillRandom();  
+    // }
+
     double score = 0.0;
 
     auto genome = std::dynamic_pointer_cast<CircularGenome<int>>(org->genomes[name]);
@@ -53,6 +58,7 @@ GenomicMultiBrainWorld::evaluateSolo(std::shared_ptr<Organism> org, int analyze,
       std::cout << "GARBO set your genome site type to int ya fool (not really i'm the fool)" << std::endl;
       exit(1);
     }
+
     if (gameCode == 0){
       for (auto site:genome->sites){
         score += 100 - std::abs(100 - site); //100 is the target site value, assumed to be within the alphabet size
@@ -69,17 +75,21 @@ GenomicMultiBrainWorld::evaluateSolo(std::shared_ptr<Organism> org, int analyze,
     else if (gameCode == 2){
       auto mean = std::accumulate(genome->sites.begin(), genome->sites.end()-1, 0.0) / (genome->sites.size()-1); //last site is borked
       double variance = 0;
-      // for (auto site:genome->sites){
-      for (int bla = 0; bla < genome->sites.size()-1; ++bla){
-        // variance += std::pow(site-mean, 2);
-        variance += std::pow(genome->sites[bla]-mean, 2);
-      }
-      variance /= genome->sites.size()-1;
+      variance = *std::max_element(genome->sites.begin(), genome->sites.end()-1) - *std::min_element(genome->sites.begin(), genome->sites.end()-1); //NOT REWAL
+      // std::cout << variance << std::endl;
+      // // for (auto site:genome->sites){
+      // for (int bla = 0; bla < genome->sites.size()-1; ++bla){
+      //   // variance += std::pow(site-mean, 2);
+      //   variance += std::pow(genome->sites[bla]-mean, 2);
+      // }
+      // variance /= genome->sites.size()-1;
       // -------------
+      score = 4*std::sin(variance-mean/4) + (mean*2);
+      // score = 4*std::sin(4*std::sqrt(variance)-mean/4) + (mean*2);
       // score = (std::sqrt(variance) * std::sin(std::sin(mean)*variance)) + (mean*2); //max score should be 256 +/- a bit for veering off into variance land
       // (√x)*sin(sin(y)*x) + y/2
       // score = (std::tanh(variance) * std::sin(std::sin(mean)*variance)) + (mean*2);
-      score = std::sin(8*variance)*std::sqrt(variance)*std::sin(std::sin(mean)*variance) + (mean*2);
+      // score = std::sin(8*variance)*std::sqrt(variance)*std::sin(std::sin(mean)*variance) + (mean*2);
       org->dataMap.append("mean", mean); //average each mean together
       org->dataMap.append(name+"mean", mean); //record individual mean
       org->dataMap.append("variance", variance); //average each variance together

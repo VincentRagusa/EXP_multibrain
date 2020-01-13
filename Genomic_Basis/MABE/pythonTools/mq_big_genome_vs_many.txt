@@ -1,0 +1,34 @@
+REPS = 101 120
+
+VAR = genome GENOME_CIRCULAR-sizeInitial
+VAR = brains WORLD_GMB_NAMES-genomeNameSpace
+
+CONDITIONS = brains="A::,B::,C::,D::,E::,F::,G::,H::,I::,J::" genome=100
+CONDITIONS = brains="A::" genome=1000
+
+#EXCEPT = EAM=0 AE=0
+
+SETTINGS = settings.cfg,settings_organism.cfg,settings_world.cfg
+
+#OTHERFILES = my_file.txt
+
+
+#PLF = MASTER = 'LOD_organisms.csv'
+#PLF = some_var = best 5 by ID from { 'LOD_organisms_{{rep}}.csv' }
+#PLF = MASTER = collapse some_var
+-----
+JOBNAME = NONE
+
+EXECUTABLE = ./mabe
+#EXECUTABLE = mabe.exe
+
+-----
+
+# HPCC
+HPCC_LONGJOB = FALSE
+HPCC_PARAMETERS = #SBATCH -C intel18|intel16|intel14
+HPCC_PARAMETERS = #SBATCH --ntasks=1
+HPCC_PARAMETERS = #SBATCH --cpus-per-task=1
+HPCC_PARAMETERS = #SBATCH --time=03:50:00
+HPCC_PARAMETERS = #SBATCH --mem=2G
+HPCC_PARAMETERS = #SBATCH --mail-type=FAIL
