@@ -43,6 +43,46 @@ GenomicMultiBrainWorld::GenomicMultiBrainWorld(std::shared_ptr<ParametersTable> 
   }
 }
 
+template<typename T>
+auto
+arithmetic_mean(std::vector<T> data){
+  return std::accumulate(data.begin(), data.end(), 0.0) / (data.size());
+}
+
+template<typename T>
+auto
+arithmetic_variance(std::vector<T> data, double MA){
+  auto VA = 0.0;
+  for (auto val:data){
+    VA += std::pow(val - MA, 2);
+  }
+  VA /= data.size();
+  return VA;
+}
+
+template<typename T>
+auto
+geometric_mean(std::vector<T> data){
+  auto MG = 1.0;
+  for (auto val:data){
+    MG *= std::abs(val);
+  }
+  MG = std::pow(MG, 1.0/data.size());
+  return MG;
+}
+
+template<typename T>
+auto
+geometric_variance(std::vector<T> data, double MG){
+  auto VG = 0.0;
+  for (auto val:data){
+    VG += std::pow(std::log(std::abs(val)/MG),2.0);
+  }
+  VG /= data.size();
+  VG = std::exp(VG);
+  return VG;
+}
+
 void
 GenomicMultiBrainWorld::evaluateSolo(std::shared_ptr<Organism> org, int analyze, int visualize, int debug) {
   for (auto name : genomeNames) {
@@ -73,22 +113,47 @@ GenomicMultiBrainWorld::evaluateSolo(std::shared_ptr<Organism> org, int analyze,
       score = 5000 - max; //5000 is the assumed genome length
     }
     else if (gameCode == 2){
-      auto mean = std::accumulate(genome->sites.begin(), genome->sites.end()-1, 0.0) / (genome->sites.size()-1); //last site is borked
+      auto mean = arithmetic_mean(genome->sites);
       double variance = 0;
-      variance = *std::max_element(genome->sites.begin(), genome->sites.end()-1) - *std::min_element(genome->sites.begin(), genome->sites.end()-1); //NOT REWAL
-      // std::cout << variance << std::endl;
-      // // for (auto site:genome->sites){
-      // for (int bla = 0; bla < genome->sites.size()-1; ++bla){
-      //   // variance += std::pow(site-mean, 2);
-      //   variance += std::pow(genome->sites[bla]-mean, 2);
+      variance = arithmetic_variance(genome->sites, mean);
+      // variance = *std::max_element(genome->sites.begin(), genome->sites.end()) - *std::min_element(genome->sites.begin(), genome->sites.end()); //NOT REWAL
+      // ------------
+      // auto mean = geometric_mean(genome->sites);
+      // double variance = 0;
+      // if (mean == 0.0){
+      //   mean = arithmetic_mean(genome->sites);
+      //   variance = arithmetic_variance(genome->sites, mean);
       // }
-      // variance /= genome->sites.size()-1;
+      // else{
+      //   // variance = arithmetic_variance(genome->sites, mean);
+      //   variance = geometric_variance(genome->sites, mean);
+      // }
       // -------------
-      score = 4*std::sin(variance-mean/4) + (mean*2);
+      // score = std::sin(mean)*std::sin(variance-mean) + mean;
+      // score = 4*std::sin(variance-mean/4) + (mean*2);
       // score = 4*std::sin(4*std::sqrt(variance)-mean/4) + (mean*2);
       // score = (std::sqrt(variance) * std::sin(std::sin(mean)*variance)) + (mean*2); //max score should be 256 +/- a bit for veering off into variance land
       // (√x)*sin(sin(y)*x) + y/2
       // score = (std::tanh(variance) * std::sin(std::sin(mean)*variance)) + (mean*2);
+
+      auto helper = std::abs(mean-128);
+      
+      if (name != "A::"){
+        score = mean/4;
+      }
+      else{
+        // score = std::sin(mean) + mean;
+        // auto b = 12.0;
+        // score = std::sqrt( (1+std::pow(b,2) ) / (1+std::pow(b,2)*std::cos(std::cos(mean))) ) * std::cos(mean) + mean;
+        // score = mean + std::sqrt(145.0)*std::cos(mean)*std::sqrt(1.0/(1.0+144.0*std::pow(std::cos(mean),2)));
+        if (((int)std::ceil(mean)) % 2 == 1){
+          score = mean - std::floor(mean) + std::ceil(std::floor(mean)/2);
+        }
+        else{
+          score = std::ceil(std::floor(mean)/2);
+        }
+      }
+
       // score = std::sin(8*variance)*std::sqrt(variance)*std::sin(std::sin(mean)*variance) + (mean*2);
       org->dataMap.append("mean", mean); //average each mean together
       org->dataMap.append(name+"mean", mean); //record individual mean
