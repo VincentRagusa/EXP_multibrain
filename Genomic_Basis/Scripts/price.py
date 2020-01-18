@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # "parameters"
 
 path_root = "../MABE/"
-trait = "optimizeValue"
+trait = "score_AVE"
 
 # -----------------------------------
 # helper functions
@@ -117,9 +117,9 @@ def plot(f):
     #     ani.event_source.stop()
     axs.clear()
     axs.title.set_text(f)
-    axs.scatter(RHS_1[:f], LHS[:f], label="RHS 1", alpha=0.25)
-    axs.scatter(RHS_2[:f], LHS[:f], label="RHS 2", alpha=0.25, marker="s")
-    axs.scatter(RHS_3[:f], LHS[:f], label="RHS 3", alpha=0.25, marker="^")
+    axs.scatter(RHS_1[:f], LHS[:f], label="RHS 1 cov(Ca,Xa)", alpha=0.25)
+    axs.scatter(RHS_2[:f], LHS[:f], label="RHS 2 ave[Ca*dXa]", alpha=0.25, marker="s")
+    axs.scatter(RHS_3[:f], LHS[:f], label="RHS 3 -cov(Cd, Xd)", alpha=0.25, marker="^")
     axs.scatter(RHS[:f], LHS[:f], color="black", alpha=0.25)
     axs.legend()
 

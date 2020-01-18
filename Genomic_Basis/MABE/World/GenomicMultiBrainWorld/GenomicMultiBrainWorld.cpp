@@ -132,27 +132,26 @@ GenomicMultiBrainWorld::evaluateSolo(std::shared_ptr<Organism> org, int analyze,
       // score = std::sin(mean)*std::sin(variance-mean) + mean;
       // score = 4*std::sin(variance-mean/4) + (mean*2);
       // score = 4*std::sin(4*std::sqrt(variance)-mean/4) + (mean*2);
-      // score = (std::sqrt(variance) * std::sin(std::sin(mean)*variance)) + (mean*2); //max score should be 256 +/- a bit for veering off into variance land
+      score = (std::sqrt(variance) * std::sin(std::sin(mean)*variance)) + (mean*2); //max score should be 256 +/- a bit for veering off into variance land
       // (√x)*sin(sin(y)*x) + y/2
       // score = (std::tanh(variance) * std::sin(std::sin(mean)*variance)) + (mean*2);
 
-      auto helper = std::abs(mean-128);
       
-      if (name != "A::"){
-        score = mean/4;
-      }
-      else{
-        // score = std::sin(mean) + mean;
-        // auto b = 12.0;
-        // score = std::sqrt( (1+std::pow(b,2) ) / (1+std::pow(b,2)*std::cos(std::cos(mean))) ) * std::cos(mean) + mean;
-        // score = mean + std::sqrt(145.0)*std::cos(mean)*std::sqrt(1.0/(1.0+144.0*std::pow(std::cos(mean),2)));
-        if (((int)std::ceil(mean)) % 2 == 1){
-          score = mean - std::floor(mean) + std::ceil(std::floor(mean)/2);
-        }
-        else{
-          score = std::ceil(std::floor(mean)/2);
-        }
-      }
+      // if (name != "A::"){
+      //   score = mean/4;
+      // }
+      // else{
+      //   // score = std::sin(mean) + mean;
+      //   // auto b = 12.0;
+      //   // score = std::sqrt( (1+std::pow(b,2) ) / (1+std::pow(b,2)*std::cos(std::cos(mean))) ) * std::cos(mean) + mean;
+      //   // score = mean + std::sqrt(145.0)*std::cos(mean)*std::sqrt(1.0/(1.0+144.0*std::pow(std::cos(mean),2)));
+      //   if (((int)std::ceil(mean)) % 2 == 1){
+      //     score = mean - std::floor(mean) + std::ceil(std::floor(mean)/2);
+      //   }
+      //   else{
+      //     score = std::ceil(std::floor(mean)/2);
+      //   }
+      // }
 
       // score = std::sin(8*variance)*std::sqrt(variance)*std::sin(std::sin(mean)*variance) + (mean*2);
       org->dataMap.append("mean", mean); //average each mean together

@@ -7,8 +7,8 @@ import matplotlib.animation as animation
 def fn(x,y):
     #return np.sin(y)*np.sin(x-y) + y
     # return 4*np.sin(x-y/4) + 2*y
-    # return np.sqrt(x) * np.sin(np.sin(y)*x) + 2*y
-    return np.sqrt(x)*np.sin(8*x)* np.sin(np.sin(y)*x) + 2*y
+    return np.sqrt(x) * np.sin(np.sin(y)*x) + 2*y
+    # return np.sqrt(x)*np.sin(8*x)* np.sin(np.sin(y)*x) + 2*y
     # return x*y
 
 fig, axs = plt.subplots(1,1)
