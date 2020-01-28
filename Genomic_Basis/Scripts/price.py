@@ -66,6 +66,8 @@ for fi, fp in enumerate(files):
             current_generation[line[column_index_from_key["ID"]]] = [ line[column_index_from_key[trait]], line[column_index_from_key["snapshotAncestors_LIST"]] ]
     # Finished loading data (for this file...)
 
+    if fi == 0: continue # skip projenator-to-first population analysis. it creates artifacts in the output data
+
     # Make Ancester -> Decendant connection matrix and helper stuff
     na = len(previous_generation)
     nd = len(current_generation)
@@ -111,22 +113,42 @@ import matplotlib.animation as animation
 
 fig, axs = plt.subplots(1,1)
 
+animate = False
+
+XMIN = min(min(RHS_1), min(RHS_2), min(RHS_3),0)
+XMAX = max(max(RHS_1), max(RHS_2), max(RHS_3),0)
+YMIN = min(min(LHS),0)
+YMAX = max(max(LHS),0)
+MIN = min([XMIN,YMIN], key=lambda x: abs(x))
+MAX = max(XMIN,YMAX)
+
 def plot(f):
-    # global ani
-    # if f > len(LHS):
-    #     ani.event_source.stop()
+    if animate:
+        global ani
+        if f > len(LHS):
+            ani.event_source.stop()
     axs.clear()
+    
     axs.title.set_text(f)
-    axs.scatter(RHS_1[:f], LHS[:f], label="RHS 1 cov(Ca,Xa)", alpha=0.25)
-    axs.scatter(RHS_2[:f], LHS[:f], label="RHS 2 ave[Ca*dXa]", alpha=0.25, marker="s")
-    axs.scatter(RHS_3[:f], LHS[:f], label="RHS 3 -cov(Cd, Xd)", alpha=0.25, marker="^")
-    axs.scatter(RHS[:f], LHS[:f], color="black", alpha=0.25)
+    axs.scatter(RHS_1[:f], LHS[:f], label="RHS 1 cov(Ca,Xa)", alpha=0.15, color="blue")
+    axs.scatter(RHS_2[:f], LHS[:f], label="RHS 2 ave[Ca*dXa]", alpha=0.15, marker="s", color="red")
+    axs.scatter(RHS_3[:f], LHS[:f], label="RHS 3 -cov(Cd, Xd)", alpha=0.15, marker="^", color="green")
+    # axs.scatter(RHS[:f], LHS[:f], color="black", alpha=0.15)
+
+    axs.plot([MIN,MAX],[MIN,MAX], color="black", label="f(x) = x")
+    
+    axs.plot([XMIN,XMAX],[0,0], color="black", alpha=.25)
+    axs.plot([0,0],[YMIN,YMAX], color="black", alpha=.25)
+
     axs.legend()
+    axs.set_ylabel("LHS ave(Xd) - ave(Xa)")
+    # axs.set_xlim([XMIN-1,XMAX+1])
+    # axs.set_ylim([YMIN-1,YMAX+1])
 
-    # axs.plot([RHS_1[:f], RHS_2[:f]],[LHS[:f], LHS[:f]])
-
-# ani = animation.FuncAnimation(fig, plot, interval=0)
-plot(len(LHS))
+if animate:
+    ani = animation.FuncAnimation(fig, plot, interval=0)
+else:
+    plot(len(LHS))
 
 plt.tight_layout()
 plt.show()

@@ -1,0 +1,41 @@
+REPS = 101 105
+
+VAR = brains    WORLD_GMB_NAMES-genomeNameSpace
+VAR = Fa        WORLD_GMB-AFunction               
+VAR = Pa        WORLD_GMB-APeriod                            
+VAR = Fb        WORLD_GMB-BFunction                  
+VAR = Pb        WORLD_GMB-BPeriod
+
+CONDITIONS = brains="A::","A::,B::","A::,B::,C::,D::","A::,B::,C::,D::,E::,F::,G::,H::","A::,B::,C::,D::,E::,F::,G::,H::,I::,J::,K::,L::,M::,N::,O::,P::" Fa=0 Pa=1 Fb=0 Pb=1
+CONDITIONS = brains="A::","A::,B::","A::,B::,C::,D::","A::,B::,C::,D::,E::,F::,G::,H::","A::,B::,C::,D::,E::,F::,G::,H::,I::,J::,K::,L::,M::,N::,O::,P::" Fa="VECT[0,0]" Pa=1 Fb="VECT[0,0]" Pb=1
+CONDITIONS = brains="A::","A::,B::","A::,B::,C::,D::","A::,B::,C::,D::,E::,F::,G::,H::","A::,B::,C::,D::,E::,F::,G::,H::,I::,J::,K::,L::,M::,N::,O::,P::" Fa="VECT[0,0]" Pa=1 Fb=0 Pb=1
+CONDITIONS = brains="A::","A::,B::","A::,B::,C::,D::","A::,B::,C::,D::,E::,F::,G::,H::","A::,B::,C::,D::,E::,F::,G::,H::,I::,J::,K::,L::,M::,N::,O::,P::" Fa="VECT[0,0]" Pa=1 Fb="(0-0.25)*VECT[0,0]" Pb=1
+
+
+
+#EXCEPT = EAM=0 AE=0
+
+SETTINGS = settings.cfg,settings_organism.cfg,settings_world.cfg
+
+#OTHERFILES = my_file.txt
+
+
+#PLF = MASTER = 'LOD_organisms.csv'
+#PLF = some_var = best 5 by ID from { 'LOD_organisms_{{rep}}.csv' }
+#PLF = MASTER = collapse some_var
+-----
+JOBNAME = NONE
+
+EXECUTABLE = ./mabe
+#EXECUTABLE = mabe.exe
+
+-----
+
+# HPCC
+HPCC_LONGJOB = FALSE
+HPCC_PARAMETERS = #SBATCH -C intel18|intel16|intel14
+HPCC_PARAMETERS = #SBATCH --ntasks=1
+HPCC_PARAMETERS = #SBATCH --cpus-per-task=1
+HPCC_PARAMETERS = #SBATCH --time=03:50:00
+HPCC_PARAMETERS = #SBATCH --mem=2G
+HPCC_PARAMETERS = #SBATCH --mail-type=FAIL

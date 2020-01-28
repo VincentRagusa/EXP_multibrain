@@ -17,14 +17,31 @@ GenomicMultiBrainWorld::groupNamePL = Parameters::register_parameter("WORLD_GMB_
 std::shared_ptr<ParameterLink<std::string>>
 GenomicMultiBrainWorld::genomeNamePL = Parameters::register_parameter( "WORLD_GMB_NAMES-genomeNameSpace", (std::string) "root::", "namespace for parameters used to define brain");
 
-std::shared_ptr<ParameterLink<int>>
-GenomicMultiBrainWorld::gameCodePL = Parameters::register_parameter( "WORLD_GMB-gameCode", (int) 0, "it picks the game yo");
+std::shared_ptr<ParameterLink<bool>>
+GenomicMultiBrainWorld::randomizeGenomesPL = Parameters::register_parameter( "WORLD_GMB-randomizeGenomes", (bool) 0, "seed genomes with all 0s or random values?");
+
+std::shared_ptr<ParameterLink<double>>
+GenomicMultiBrainWorld::APeriodPL = Parameters::register_parameter( "WORLD_GMB-APeriod", (double) 1.0, "how long A runs before switching to B");
+
+std::shared_ptr<ParameterLink<double>>
+GenomicMultiBrainWorld::BPeriodPL = Parameters::register_parameter( "WORLD_GMB-BPeriod", (double) 1.0, "how long B runs before switching back to A");
+
+std::shared_ptr<ParameterLink<std::string>>
+GenomicMultiBrainWorld::AFunctionPL = Parameters::register_parameter("WORLD_GMB-AFunction", (std::string) "VECT[0,0]", "(MTree)");
+
+std::shared_ptr<ParameterLink<std::string>>
+GenomicMultiBrainWorld::BFunctionPL = Parameters::register_parameter("WORLD_GMB-BFunction", (std::string) "VECT[0,0]", "(MTree)");
 
 
 GenomicMultiBrainWorld::GenomicMultiBrainWorld(std::shared_ptr<ParametersTable> PT_):
   AbstractWorld(PT_) {
-  gameCode = gameCodePL->get(PT);
   convertCSVListToVector(genomeNamePL->get(PT), genomeNames);
+  AFunctionMT = stringToMTree(AFunctionPL->get(PT));
+  BFunctionMT = stringToMTree(BFunctionPL->get(PT));
+  La = APeriodPL->get(PT);
+  Lb = BPeriodPL->get(PT);
+  randomizeGenome = randomizeGenomesPL->get(PT);
+
 
   // columns to be added to ave file
   popFileColumns.clear();
@@ -32,15 +49,15 @@ GenomicMultiBrainWorld::GenomicMultiBrainWorld(std::shared_ptr<ParametersTable> 
   for (auto name : genomeNames) { 
 		popFileColumns.push_back(name + "score");
 	}
-  if (gameCode == 2){
-    popFileColumns.push_back("mean");
-    popFileColumns.push_back("variance");
-    for (auto name : genomeNames) { 
-      popFileColumns.push_back(name + "mean");
-      popFileColumns.push_back(name + "variance");
-    }
-  
+
+  popFileColumns.push_back("mean");
+  // popFileColumns.push_back("variance");
+  for (auto name : genomeNames) { 
+    popFileColumns.push_back(name + "mean");
+    // popFileColumns.push_back(name + "variance");
   }
+  
+  
 }
 
 template<typename T>
@@ -60,109 +77,70 @@ arithmetic_variance(std::vector<T> data, double MA){
   return VA;
 }
 
-template<typename T>
-auto
-geometric_mean(std::vector<T> data){
-  auto MG = 1.0;
-  for (auto val:data){
-    MG *= std::abs(val);
+std::vector<double>
+GenomicMultiBrainWorld::C(double x){
+  double c_a = 0;
+  double c_b = 0;
+  while (x >= La + Lb){
+    ++c_a; ++c_b;
+    x -= La + Lb;
   }
-  MG = std::pow(MG, 1.0/data.size());
-  return MG;
+  if (x >= La){
+    ++c_a;
+    x -= La;
+  }
+  return {c_a, c_b, x};
 }
 
-template<typename T>
-auto
-geometric_variance(std::vector<T> data, double MG){
-  auto VG = 0.0;
-  for (auto val:data){
-    VG += std::pow(std::log(std::abs(val)/MG),2.0);
+double
+GenomicMultiBrainWorld::F(double x){
+  auto c = C(x);
+  auto c_a = c[0];
+  auto c_b = c[1];
+  auto d = c[2];
+
+
+  std::vector<std::vector<double>> vec_a, vec_b;
+
+  if (c_a == c_b){
+    vec_a = {{c_a*La + d}};
+    vec_b = {{c_b*Lb}};
   }
-  VG /= data.size();
-  VG = std::exp(VG);
-  return VG;
+  else{
+    vec_a = {{c_a*La}};
+    vec_b = {{c_b*Lb + d}};
+  }
+
+  auto f_a = AFunctionMT->eval(vec_a)[0];
+  auto f_b = BFunctionMT->eval(vec_b)[0];
+
+  return f_a + f_b;
 }
 
 void
 GenomicMultiBrainWorld::evaluateSolo(std::shared_ptr<Organism> org, int analyze, int visualize, int debug) {
   for (auto name : genomeNames) {
-    // if (Global::update == 0){
-    //   //randomize genomes
-    //   org->genomes[name]->fillRandom();  
-    // }
 
-    double score = 0.0;
-
+    if (randomizeGenome && Global::update == 0){
+      org->genomes[name]->fillRandom();  
+    }
+    
     auto genome = std::dynamic_pointer_cast<CircularGenome<int>>(org->genomes[name]);
     if (genome == nullptr){
       std::cout << "GARBO set your genome site type to int ya fool (not really i'm the fool)" << std::endl;
       exit(1);
     }
 
-    if (gameCode == 0){
-      for (auto site:genome->sites){
-        score += 100 - std::abs(100 - site); //100 is the target site value, assumed to be within the alphabet size
-      }
-    }
-    else if (gameCode == 1){
-      std::fill(site_symbol_counts.begin(), site_symbol_counts.end(), 0);
-      for (auto site:genome->sites){ //TODO BUG fix the last site in the genome bug for this game
-        ++site_symbol_counts[site];
-      }
-      auto max = *std::max_element(site_symbol_counts.begin(), site_symbol_counts.end());
-      score = 5000 - max; //5000 is the assumed genome length
-    }
-    else if (gameCode == 2){
-      auto mean = arithmetic_mean(genome->sites);
-      double variance = 0;
-      variance = arithmetic_variance(genome->sites, mean);
-      // variance = *std::max_element(genome->sites.begin(), genome->sites.end()) - *std::min_element(genome->sites.begin(), genome->sites.end()); //NOT REWAL
-      // ------------
-      // auto mean = geometric_mean(genome->sites);
-      // double variance = 0;
-      // if (mean == 0.0){
-      //   mean = arithmetic_mean(genome->sites);
-      //   variance = arithmetic_variance(genome->sites, mean);
-      // }
-      // else{
-      //   // variance = arithmetic_variance(genome->sites, mean);
-      //   variance = geometric_variance(genome->sites, mean);
-      // }
-      // -------------
-      // score = std::sin(mean)*std::sin(variance-mean) + mean;
-      // score = 4*std::sin(variance-mean/4) + (mean*2);
-      // score = 4*std::sin(4*std::sqrt(variance)-mean/4) + (mean*2);
-      score = (std::sqrt(variance) * std::sin(std::sin(mean)*variance)) + (mean*2); //max score should be 256 +/- a bit for veering off into variance land
-      // (√x)*sin(sin(y)*x) + y/2
-      // score = (std::tanh(variance) * std::sin(std::sin(mean)*variance)) + (mean*2);
-
-      
-      // if (name != "A::"){
-      //   score = mean/4;
-      // }
-      // else{
-      //   // score = std::sin(mean) + mean;
-      //   // auto b = 12.0;
-      //   // score = std::sqrt( (1+std::pow(b,2) ) / (1+std::pow(b,2)*std::cos(std::cos(mean))) ) * std::cos(mean) + mean;
-      //   // score = mean + std::sqrt(145.0)*std::cos(mean)*std::sqrt(1.0/(1.0+144.0*std::pow(std::cos(mean),2)));
-      //   if (((int)std::ceil(mean)) % 2 == 1){
-      //     score = mean - std::floor(mean) + std::ceil(std::floor(mean)/2);
-      //   }
-      //   else{
-      //     score = std::ceil(std::floor(mean)/2);
-      //   }
-      // }
-
-      // score = std::sin(8*variance)*std::sqrt(variance)*std::sin(std::sin(mean)*variance) + (mean*2);
-      org->dataMap.append("mean", mean); //average each mean together
-      org->dataMap.append(name+"mean", mean); //record individual mean
-      org->dataMap.append("variance", variance); //average each variance together
-      org->dataMap.append(name+"variance", variance); //record individual variance
-    }
+    auto mean = arithmetic_mean(genome->sites);
+    // auto variance = arithmetic_variance(genome->sites, mean);
+    auto score = F(mean );
     
-    org->dataMap.append("score", score); //average each score together
-		org->dataMap.append(name+"score", score); //record individual scores
-    
+    org->dataMap.append("score", score);
+    org->dataMap.append(name+"score", score);
+    org->dataMap.append("mean", mean); //average each mean together
+    org->dataMap.append(name+"mean", mean); //record individual mean
+    // org->dataMap.append("variance", variance); //average each variance together
+    // org->dataMap.append(name+"variance", variance); //record individual variance
   }
 }
 

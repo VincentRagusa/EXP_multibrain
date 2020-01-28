@@ -18,9 +18,22 @@ public:
 
   static std::shared_ptr<ParameterLink<std::string>> groupNamePL;
   static std::shared_ptr<ParameterLink<std::string>> genomeNamePL;
-  static std::shared_ptr<ParameterLink<int>> gameCodePL;
-  
-  int gameCode;
+  static std::shared_ptr<ParameterLink<bool>> randomizeGenomesPL;
+  static std::shared_ptr<ParameterLink<double>> APeriodPL;
+  static std::shared_ptr<ParameterLink<double>> BPeriodPL;
+  static std::shared_ptr<ParameterLink<std::string>> AFunctionPL;
+  static std::shared_ptr<ParameterLink<std::string>> BFunctionPL;
+
+  std::shared_ptr<Abstract_MTree> AFunctionMT, BFunctionMT;
+  double La, Lb;
+  bool randomizeGenome;
+
+  double
+  F(double x );
+
+  std::vector<double>
+  C(double x );
+ 
   std::vector<int> site_symbol_counts = std::vector<int>(256, 0);
   std::vector<std::string> genomeNames;
 

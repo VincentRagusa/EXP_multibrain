@@ -6,16 +6,33 @@ import matplotlib.animation as animation
 
 fig, axs = plt.subplots(1,2)
 
+def Fa(x):
+    return x
 
-def fn(x):
-    if np.ceil(x) % 2 == 1:
-        return x - np.floor(x) + np.ceil(np.floor(x)/2)
+def Fb(x):
+    return -0.1*x
+
+def C(x, la, lb):
+    ca = 0
+    cb = 0
+    while x >= la+lb:
+        ca += 1
+        cb += 1
+        x -= la+lb
+    if x >= la:
+        ca += 1
+        x -= la
+    return ca, cb, x
+
+def F(x):
+    la = 2
+    lb = 1
+    ca, cb, d = C(x, la, lb)
+    if ca == cb:
+        return Fa(ca*la + d) + Fb(cb*lb)
     else:
-        return np.ceil(np.floor(x)/2)
+        return Fa(ca*la) + Fb(cb*lb + d)
 
-
-def d_dx_fn(x):
-    return np.ceil(x) & 1
 
 
 def animate(f):
@@ -51,27 +68,27 @@ def animate(f):
 
     for nameprefix in sorted(found_names):
         if nameprefix == "": continue
-        if nameprefix != "A::":
-            axs[0].plot(X[nameprefix][-1],X[nameprefix][-1]/4, label="."+nameprefix, marker="^")
-        else:
-            axs[0].plot(X[nameprefix][-1],fn(X[nameprefix][-1]), label="."+nameprefix, marker="o")
+        # if nameprefix != "A::":
+            # axs[0].plot(X[nameprefix][-1],X[nameprefix][-1]/4, label="."+nameprefix, marker="^")
+        # else:
+        axs[0].plot(X[nameprefix][-1],F(X[nameprefix][-1]), label="."+nameprefix, marker="o")
         
     for nameprefix in sorted(found_names):
         if nameprefix == "": continue
-        if nameprefix != "A::":
-            xx = list(range(2,len(X[nameprefix])))
-            yy = [X[nameprefix][i-1]/4-X[nameprefix][i-2]/4 for i in xx]
-            axs[1].plot(xx, yy, label="."+nameprefix)
-        else:
-            xx = list(range(2,len(X[nameprefix])))
-            yy = [fn(X[nameprefix][i-1])-fn(X[nameprefix][i-2]) for i in xx]
-            axs[1].plot(xx, yy, label="."+nameprefix)
+        # if nameprefix != "A::":
+        #     xx = list(range(2,len(X[nameprefix])))
+        #     yy = [X[nameprefix][i-1]/4-X[nameprefix][i-2]/4 for i in xx]
+        #     axs[1].plot(xx, yy, label="."+nameprefix)
+        # else:
+        xx = list(range(2,len(X[nameprefix])))
+        yy = [F(X[nameprefix][i-1])-F(X[nameprefix][i-2]) for i in xx]
+        axs[1].plot(xx, yy, label="."+nameprefix)
     axs[1].axhline(color="black")
 
     x = np.arange(XMIN*0.9,XMAX*1.1, 0.001)
-    y = [fn(xx) for xx in x]
+    y = [F(xx) for xx in x]
     axs[0].plot(x,y, label="fitness function")
-    axs[0].plot(x,np.divide(x,4), label="other function")
+    # axs[0].plot(x,np.divide(x,4), label="other function")
 
     axs[0].legend()
 
