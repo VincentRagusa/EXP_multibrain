@@ -23,10 +23,13 @@ public:
   static std::shared_ptr<ParameterLink<double>> BPeriodPL;
   static std::shared_ptr<ParameterLink<std::string>> AFunctionPL;
   static std::shared_ptr<ParameterLink<std::string>> BFunctionPL;
+  static std::shared_ptr<ParameterLink<bool>> seedGenomeBetweenAandBPL;
+  static std::shared_ptr<ParameterLink<bool>> recordFirstValleyCrossPL;
 
   std::shared_ptr<Abstract_MTree> AFunctionMT, BFunctionMT;
   double La, Lb;
-  bool randomizeGenome;
+  bool randomizeGenome, seedGenomeBetweenAandB, recordFirstValleyCross;
+  bool local_finished = false;
 
   double
   F(double x );
@@ -45,7 +48,7 @@ public:
   evaluateSolo(std::shared_ptr<Organism> org, int analyze, int visualize, int debug);
 
   void
-  evaluate(std::map<std::string, std::shared_ptr<Group>> &groups, int analyze, int visualize, int debug);
+  evaluate(std::map<std::string,std::shared_ptr<Group>> &groups, int analyze, int visualize, int debug);
 
   virtual std::unordered_map<std::string, std::unordered_set<std::string>>
   requiredGroups() override;

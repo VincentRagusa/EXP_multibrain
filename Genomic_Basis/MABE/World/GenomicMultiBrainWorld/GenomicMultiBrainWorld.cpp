@@ -32,6 +32,12 @@ GenomicMultiBrainWorld::AFunctionPL = Parameters::register_parameter("WORLD_GMB-
 std::shared_ptr<ParameterLink<std::string>>
 GenomicMultiBrainWorld::BFunctionPL = Parameters::register_parameter("WORLD_GMB-BFunction", (std::string) "VECT[0,0]", "(MTree)");
 
+std::shared_ptr<ParameterLink<bool>>
+GenomicMultiBrainWorld::seedGenomeBetweenAandBPL = Parameters::register_parameter( "WORLD_GMB-seedGenomeBetweenAandB", (bool) 0, "seed genomes with all 'APeriod' if true. The value of 'APeriod' will be down-cast as an int before it is inserted into the genome.");
+
+std::shared_ptr<ParameterLink<bool>>
+GenomicMultiBrainWorld::recordFirstValleyCrossPL = Parameters::register_parameter( "WORLD_GMB-recordFirstValleyCross", (bool) 0, "records the first generation when any task");
+
 
 GenomicMultiBrainWorld::GenomicMultiBrainWorld(std::shared_ptr<ParametersTable> PT_):
   AbstractWorld(PT_) {
@@ -41,7 +47,17 @@ GenomicMultiBrainWorld::GenomicMultiBrainWorld(std::shared_ptr<ParametersTable> 
   La = APeriodPL->get(PT);
   Lb = BPeriodPL->get(PT);
   randomizeGenome = randomizeGenomesPL->get(PT);
+  seedGenomeBetweenAandB = seedGenomeBetweenAandBPL->get(PT);
+  recordFirstValleyCross = recordFirstValleyCrossPL->get(PT);
+  
+  if (seedGenomeBetweenAandBPL){
+    std::cout << "WORLD: WARNING!\n\tThe value of 'APeriodPL' will be down-cast as an int! This can cause missalignment between mutation size and position in the fitness landscape." << std::endl;
+  }
 
+  if (randomizeGenome && seedGenomeBetweenAandB){
+    std::cout << "WORLD: ERROR!\n\tYou cannot set both 'randomizeGenome' and 'seedGenomeBetweenAandB' parameters to 1 at the same time!" << std::endl;
+    exit(1);
+  }
 
   // columns to be added to ave file
   popFileColumns.clear();
@@ -127,8 +143,14 @@ GenomicMultiBrainWorld::evaluateSolo(std::shared_ptr<Organism> org, int analyze,
     
     auto genome = std::dynamic_pointer_cast<CircularGenome<int>>(org->genomes[name]);
     if (genome == nullptr){
-      std::cout << "GARBO set your genome site type to int ya fool (not really i'm the fool)" << std::endl;
+      std::cout << "WORLD: ERROR!\n\tThis world requires that you run MABE with circular genome and that the 'GENOME-sitesType' parameter is set to 'int'." << std::endl;
       exit(1);
+    }
+
+    if (seedGenomeBetweenAandB && Global::update == 0){
+      for (auto& site : genome->sites){
+        site = (int) La;
+      }
     }
 
     auto mean = arithmetic_mean(genome->sites);
@@ -141,6 +163,11 @@ GenomicMultiBrainWorld::evaluateSolo(std::shared_ptr<Organism> org, int analyze,
     org->dataMap.append(name+"mean", mean); //record individual mean
     // org->dataMap.append("variance", variance); //average each variance together
     // org->dataMap.append(name+"variance", variance); //record individual variance
+
+    if (recordFirstValleyCross && mean > La+Lb){
+      FileManager::writeToFile("valley_cross_time.csv", std::to_string(Global::update)+","+name, "generation_of_cross, trait_name");
+      local_finished = true;
+    }
   }
 }
 
@@ -148,6 +175,9 @@ void
 GenomicMultiBrainWorld::evaluate(std::map<std::string, std::shared_ptr<Group>> &groups, int analyze, int visualize, int debug) {
   for (auto& org:groups[groupNamePL->get(PT)]->population){
     evaluateSolo(org, analyze, visualize, debug);
+    if (local_finished){
+      groups[groupNamePL->get(PT)]->archivist->finished_ = true;
+    }
   }
 }
 
