@@ -1,4 +1,4 @@
-REPS = 101 105
+REPS = 101 150
 
 VAR = brains    WORLD_GMB_NAMES-genomeNameSpace
 VAR = Fa        WORLD_GMB-AFunction               

@@ -1,14 +1,15 @@
-REPS = 151 900
+REPS = 601 850
+# NEEDS TO STOP AT 900! keep running ranges of reps until you get to 900
 
 VAR = brains    WORLD_GMB_NAMES-genomeNameSpace
 VAR = Fa        WORLD_GMB-AFunction               
 VAR = Pa        WORLD_GMB-APeriod                            
 VAR = Fb        WORLD_GMB-BFunction                  
 VAR = Pb        WORLD_GMB-BPeriod
-VAR = CRM	    OPTIMIZER_SIMPLE-cullRemap
-VAR = POP       GLOBAL-initPop
+VAR = CRM	OPTIMIZER_SIMPLE-cullRemap
 
-CONDITIONS = brains="A::" Fa="VECT[0,0]" Pa=2 Fb="(0-0.1)*VECT[0,0]" Pb=0.25,0.5,0.75,1.0 CRM=0.03125 POP="default 100"
+
+CONDITIONS = brains="A::" Fa="VECT[0,0]" Pa=2 Fb="(0-0.1)*VECT[0,0]" Pb=0.25,0.5,0.75,1.0 CRM=0.03125
 
 
 
@@ -23,7 +24,7 @@ SETTINGS = settings.cfg,settings_organism.cfg,settings_world.cfg
 #PLF = some_var = best 5 by ID from { 'LOD_organisms_{{rep}}.csv' }
 #PLF = MASTER = collapse some_var
 -----
-JOBNAME = NONE
+JOBNAME = more_reps_16x
 
 EXECUTABLE = ./mabe
 #EXECUTABLE = mabe.exe

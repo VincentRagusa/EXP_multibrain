@@ -5,10 +5,14 @@ VAR = Fa        WORLD_GMB-AFunction
 VAR = Pa        WORLD_GMB-APeriod                            
 VAR = Fb        WORLD_GMB-BFunction                  
 VAR = Pb        WORLD_GMB-BPeriod
-VAR = CRM	    OPTIMIZER_SIMPLE-cullRemap
-VAR = POP       GLOBAL-initPop
+VAR = CRM	OPTIMIZER_SIMPLE-cullRemap
 
-CONDITIONS = brains="A::" Fa="VECT[0,0]" Pa=2 Fb="(0-0.1)*VECT[0,0]" Pb=0.25,0.5,0.75,1.0 CRM=0.03125 POP="default 1600"
+
+#!!!README!!! to reproduce this exp you need to go to settings.cfg and set the GLOBAL-initPop parameter to "default 1600"
+#             this is due to a bug in how mq.py reads this file. It can not currently handle the space between default
+#             and 1600. For all other exp, the setting should be set to "default 100".
+
+CONDITIONS = brains="A::" Fa="VECT[0,0]" Pa=2 Fb="(0-0.1)*VECT[0,0]" Pb=0.25,0.5,0.75,1.0 CRM=0.03125
 
 
 
@@ -23,7 +27,7 @@ SETTINGS = settings.cfg,settings_organism.cfg,settings_world.cfg
 #PLF = some_var = best 5 by ID from { 'LOD_organisms_{{rep}}.csv' }
 #PLF = MASTER = collapse some_var
 -----
-JOBNAME = NONE
+JOBNAME = 16_bigger_pop
 
 EXECUTABLE = ./mabe
 #EXECUTABLE = mabe.exe
