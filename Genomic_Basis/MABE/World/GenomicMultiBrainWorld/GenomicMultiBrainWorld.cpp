@@ -164,8 +164,12 @@ GenomicMultiBrainWorld::evaluateSolo(std::shared_ptr<Organism> org, int analyze,
     // org->dataMap.append("variance", variance); //average each variance together
     // org->dataMap.append(name+"variance", variance); //record individual variance
 
-    if (recordFirstValleyCross && mean > La+Lb){
-      FileManager::writeToFile("valley_cross_time.csv", std::to_string(Global::update)+","+name, "generation_of_cross, trait_name");
+    if (! first_pass && recordFirstValleyCross && mean > La+Lb){
+      FileManager::writeToFile("valley_cross_time.csv", std::to_string(Global::update) + ",-1," + name, "bottom_time, top_time, trait_name");
+      first_pass = true;
+    }
+    if (recordFirstValleyCross && mean > 2*La + Lb){
+      FileManager::writeToFile("valley_cross_time.csv", "-1," + std::to_string(Global::update) + "," + name, "bottom_time, top_time, trait_name");
       local_finished = true;
     }
   }
@@ -179,6 +183,14 @@ GenomicMultiBrainWorld::evaluate(std::map<std::string, std::shared_ptr<Group>> &
       groups[groupNamePL->get(PT)]->archivist->finished_ = true;
     }
   }
+  
+  // if (local_finished){
+  //   std::string asdfasdf = "[";
+  //   for (auto& org:groups[groupNamePL->get(PT)]->population){
+  //     asdfasdf += std::to_string(org->dataMap.getAverage("score")) + ",";
+  //   }
+  //   FileManager::writeToFile("popScores.csv", asdfasdf, "popScores");
+  // }
 }
 
 std::unordered_map<std::string, std::unordered_set<std::string>>

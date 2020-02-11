@@ -30,6 +30,7 @@ public:
   double La, Lb;
   bool randomizeGenome, seedGenomeBetweenAandB, recordFirstValleyCross;
   bool local_finished = false;
+  bool first_pass = false;
 
   double
   F(double x );

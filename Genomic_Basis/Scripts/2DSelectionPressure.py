@@ -26,7 +26,7 @@ def C(x, la, lb):
 
 def F(x):
     la = 2
-    lb = 1
+    lb = 0.5
     ca, cb, d = C(x, la, lb)
     if ca == cb:
         return Fa(ca*la + d) + Fb(cb*lb)
@@ -85,7 +85,7 @@ def animate(f):
         axs[1].plot(xx, yy, label="."+nameprefix)
     axs[1].axhline(color="black")
 
-    x = np.arange(XMIN*0.9,XMAX*1.1, 0.001)
+    x = np.arange(XMIN*0.9,XMAX*1.1, 0.01)
     y = [F(xx) for xx in x]
     axs[0].plot(x,y, label="fitness function")
     # axs[0].plot(x,np.divide(x,4), label="other function")
