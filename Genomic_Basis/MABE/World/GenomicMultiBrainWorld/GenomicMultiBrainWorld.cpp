@@ -164,33 +164,58 @@ GenomicMultiBrainWorld::evaluateSolo(std::shared_ptr<Organism> org, int analyze,
     // org->dataMap.append("variance", variance); //average each variance together
     // org->dataMap.append(name+"variance", variance); //record individual variance
 
-    if (! first_pass && recordFirstValleyCross && mean > La+Lb){
-      FileManager::writeToFile("valley_cross_time.csv", std::to_string(Global::update) + ",-1," + name, "bottom_time, top_time, trait_name");
-      first_pass = true;
-    }
-    if (recordFirstValleyCross && mean > 2*La + Lb){
-      FileManager::writeToFile("valley_cross_time.csv", "-1," + std::to_string(Global::update) + "," + name, "bottom_time, top_time, trait_name");
-      local_finished = true;
+    if (recordFirstValleyCross){
+      if (mean >= 2*La + Lb){
+        FileManager::writeToFile("valley_cross_time.csv", "-1," + std::to_string(Global::update) + "," + name, "bottom_time, top_time, trait_name");
+        local_finished = true;
+      }
+
+      
+
+      if (mean > La + Lb){ // if crossed 
+        std::vector<std::string>::iterator it;
+        it = std::find(passed.begin(), passed.end(), name);
+        name_had_1_passed[name] |= true; // make sure we know someone with this trait is crossed so we don't reset the passed flag.
+
+        if (it == passed.end()){ //if not already recorded, record.
+          FileManager::writeToFile("valley_cross_time.csv", std::to_string(Global::update) + ",-1," + name, "bottom_time, top_time, trait_name");
+          passed.push_back(name); //disable further saving
+        }
+      }
     }
   }
 }
 
 void
 GenomicMultiBrainWorld::evaluate(std::map<std::string, std::shared_ptr<Group>> &groups, int analyze, int visualize, int debug) {
+  // at the start of every generation (call to evaluate) reset the one-passed detector.
+  if (recordFirstValleyCross){
+    for (auto name:genomeNames){
+      name_had_1_passed[name] = false;
+    }
+  }
+
   for (auto& org:groups[groupNamePL->get(PT)]->population){
     evaluateSolo(org, analyze, visualize, debug);
-    if (local_finished){
-      groups[groupNamePL->get(PT)]->archivist->finished_ = true;
+  }
+
+  if (local_finished){ // if in the previous loop someone set local_finish, tell the archavist.
+    groups[groupNamePL->get(PT)]->archivist->finished_ = true;
+  }
+  
+  if (recordFirstValleyCross){
+    for (auto name:genomeNames){
+      if (! name_had_1_passed[name]){ //if this trait had no pop members passed the valley
+        std::vector<std::string>::iterator it;
+        it = std::find(passed.begin(), passed.end(), name);
+
+        if (it != passed.end()){ // and they are recorded as having passed previously
+          passed.erase(it); //lol... erase it!
+        }
+      }
     }
   }
   
-  // if (local_finished){
-  //   std::string asdfasdf = "[";
-  //   for (auto& org:groups[groupNamePL->get(PT)]->population){
-  //     asdfasdf += std::to_string(org->dataMap.getAverage("score")) + ",";
-  //   }
-  //   FileManager::writeToFile("popScores.csv", asdfasdf, "popScores");
-  // }
 }
 
 std::unordered_map<std::string, std::unordered_set<std::string>>

@@ -30,7 +30,8 @@ public:
   double La, Lb;
   bool randomizeGenome, seedGenomeBetweenAandB, recordFirstValleyCross;
   bool local_finished = false;
-  bool first_pass = false;
+  std::vector<std::string> passed;
+  std::map<std::string,bool> name_had_1_passed;
 
   double
   F(double x );
