@@ -27,24 +27,25 @@ CONSTANT = GENOME_CIRCULAR-sizeInitial 10
 CONSTANT = ARCHIVIST-outputMethod LODwAP
 CONSTANT = ARCHIVIST_DEFAULT-writeMaxFile 0
 CONSTANT = ARCHIVIST_DEFAULT-writePopFile 1
-CONSTANT = ARCHIVIST_LODWAP-dataSequence :10
+CONSTANT = ARCHIVIST_LODWAP-dataSequence :1
 CONSTANT = ARCHIVIST_LODWAP-writeDataFile 1
 CONSTANT = ARCHIVIST_LODWAP-writeOrganismsFile 0  
 
-CONSTANT = OPTIMIZER_SIMPLE-cullBelow 0.0
-CONSTANT = OPTIMIZER_SIMPLE-optimizeValue POW[2.718281828,DM_AVE[score]] #e^score
+CONSTANT = OPTIMIZER_SIMPLE-cullBelow -1.0
+CONSTANT = OPTIMIZER_SIMPLE-cullRemap -1.0
+CONSTANT = OPTIMIZER_SIMPLE-optimizeValue POW[2.718281828,DM_AVE[score]]
 
 # control
-CONDITIONS = Pb=0.2,0.4,0.6,0.8,1.0 tasks="A::" cullRemap=0 popFile=100.plf bfn="(0-0.1)*VECT[0,0]"
+CONDITIONS = Pb=0.5,1,0,1.5,2.0,2.5 tasks="A::" popFile=100.plf bfn="(0-0.1)*VECT[0,0]"
 
 #task count 2, 4, 8, 16
-CONDITIONS = Pb=0.2,0.4,0.6,0.8,1.0 tasks="A::,B::","A::,B::,C::,D::","A::,B::,C::,D::,E::,F::,G::,H::","A::,B::,C::,D::,E::,F::,G::,H::,I::,J::,K::,L::,M::,N::,O::,P::" cullRemap=0 popFile=100.plf bfn="(0-0.1)*VECT[0,0]"
+CONDITIONS = Pb=0.5,1,0,1.5,2.0,2.5 tasks="A::,B::","A::,B::,C::,D::","A::,B::,C::,D::,E::,F::,G::,H::","A::,B::,C::,D::,E::,F::,G::,H::,I::,J::,K::,L::,M::,N::,O::,P::" popFile=100.plf bfn="(0-0.1)*VECT[0,0]"
 
 #selection pressure 1/2, 1/4, 1/8, 1/16
-CONDITIONS = Pb=0.2,0.4,0.6,0.8,1.0 tasks="A::" cullRemap=0.5,0.75,0.875,0.9375 popFile=100.plf bfn="(0-0.1)*VECT[0,0]"
+#CONDITIONS = Pb=0.2,0.4,0.6,0.8,1.0 tasks="A::" cullRemap=0.5,0.75,0.875,0.9375 popFile=100.plf bfn="(0-0.1)*VECT[0,0]"
 
 #population size x2, x4, x8, x16
-CONDITIONS = Pb=0.2,0.4,0.6,0.8,1.0 tasks="A::" cullRemap=0 popFile=200.plf,400.plf,800.plf,1600.plf bfn="(0-0.1)*VECT[0,0]"
+#CONDITIONS = Pb=0.2,0.4,0.6,0.8,1.0 tasks="A::" cullRemap=0 popFile=200.plf,400.plf,800.plf,1600.plf bfn="(0-0.1)*VECT[0,0]"
 
 -----
 
