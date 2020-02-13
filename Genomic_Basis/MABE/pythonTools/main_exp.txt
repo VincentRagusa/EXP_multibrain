@@ -32,6 +32,7 @@ CONSTANT = ARCHIVIST_LODWAP-writeDataFile 1
 CONSTANT = ARCHIVIST_LODWAP-writeOrganismsFile 0  
 
 CONSTANT = OPTIMIZER_SIMPLE-cullBelow 0.0
+CONSTANT = OPTIMIZER_SIMPLE-optimizeValue POW[2.718281828,DM_AVE[score]] #e^score
 
 # control
 CONDITIONS = Pb=0.2,0.4,0.6,0.8,1.0 tasks="A::" cullRemap=0 popFile=100.plf bfn="(0-0.1)*VECT[0,0]"
