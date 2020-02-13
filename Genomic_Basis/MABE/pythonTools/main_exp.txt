@@ -1,0 +1,68 @@
+REPS = 101 115
+# 101-115, 
+
+VAR = tasks     WORLD_GMB_NAMES-genomeNameSpace                
+VAR = Pb        WORLD_GMB-BPeriod
+VAR = cullRemap OPTIMIZER_SIMPLE-cullRemap
+VAR = popFile   GLOBAL-initPop 
+
+CONSTANT = WORLD_GMB-AFunction VECT[0,0]
+CONSTANT = WORLD_GMB-APeriod 2
+#CONSTANT = WORLD_GMB-BFunction "(0-0.1)*VECT[0,0]" # This parameter is set in the conditions. it is NOT meant to change but due to 
+VAR = bfn   WORLD_GMB-BFunction                     # bugs in the current mq.py it must be set there instead of here in the constants.
+CONSTANT = WORLD_GMB-recordFirstValleyCross 0
+CONSTANT = WORLD_GMB-seedGenomeBetweenAandB 0
+
+CONSTANT = GLOBAL-updates 100000
+
+CONSTANT = GENOME-sitesType int
+CONSTANT = GENOME_CIRCULAR-mutationCopyRate 0.0
+CONSTANT = GENOME_CIRCULAR-mutationDeleteMaxSize 0
+CONSTANT = GENOME_CIRCULAR-mutationDeleteMinSize 0
+CONSTANT = GENOME_CIRCULAR-mutationDeleteRate 0.0
+CONSTANT = GENOME_CIRCULAR-mutationPointOffsetRate 0.005
+CONSTANT = GENOME_CIRCULAR-mutationPointRate 0.0
+CONSTANT = GENOME_CIRCULAR-sizeInitial 10
+
+CONSTANT = ARCHIVIST-outputMethod LODwAP
+CONSTANT = ARCHIVIST_DEFAULT-writeMaxFile 0
+CONSTANT = ARCHIVIST_DEFAULT-writePopFile 1
+CONSTANT = ARCHIVIST_LODWAP-dataSequence :10
+CONSTANT = ARCHIVIST_LODWAP-writeDataFile 1
+CONSTANT = ARCHIVIST_LODWAP-writeOrganismsFile 0  
+
+CONSTANT = OPTIMIZER_SIMPLE-cullBelow 0.0
+
+# control
+CONDITIONS = Pb=0.2,0.4,0.6,0.8,1.0 tasks="A::" cullRemap=0 popFile=100.plf bfn="(0-0.1)*VECT[0,0]"
+
+#task count 2, 4, 8, 16
+CONDITIONS = Pb=0.2,0.4,0.6,0.8,1.0 tasks="A::,B::","A::,B::,C::,D::","A::,B::,C::,D::,E::,F::,G::,H::","A::,B::,C::,D::,E::,F::,G::,H::,I::,J::,K::,L::,M::,N::,O::,P::" cullRemap=0 popFile=100.plf bfn="(0-0.1)*VECT[0,0]"
+
+#selection pressure 1/2, 1/4, 1/8, 1/16
+CONDITIONS = Pb=0.2,0.4,0.6,0.8,1.0 tasks="A::" cullRemap=0.5,0.75,0.875,0.9375 popFile=100.plf bfn="(0-0.1)*VECT[0,0]"
+
+#population size x2, x4, x8, x16
+CONDITIONS = Pb=0.2,0.4,0.6,0.8,1.0 tasks="A::" cullRemap=0 popFile=200.plf,400.plf,800.plf,1600.plf bfn="(0-0.1)*VECT[0,0]"
+
+-----
+
+#SETTINGS = settings.cfg,settings_organism.cfg,settings_world.cfg
+
+OTHERFILES = 100.plf,200.plf,400.plf,800.plf,1600.plf
+
+-----
+JOBNAME = main_exp
+
+EXECUTABLE = ./mabe
+#EXECUTABLE = mabe.exe
+-----
+
+# HPCC
+HPCC_LONGJOB = FALSE
+HPCC_PARAMETERS = #SBATCH -C intel18|intel16|intel14
+HPCC_PARAMETERS = #SBATCH --ntasks=1
+HPCC_PARAMETERS = #SBATCH --cpus-per-task=1
+HPCC_PARAMETERS = #SBATCH --time=03:50:00
+HPCC_PARAMETERS = #SBATCH --mem=2G
+HPCC_PARAMETERS = #SBATCH --mail-type=FAIL
