@@ -3,13 +3,15 @@ REPS = 101 115
 
 VAR = tasks     WORLD_GMB_NAMES-genomeNameSpace                
 VAR = Pb        WORLD_GMB-BPeriod
-VAR = cullRemap OPTIMIZER_SIMPLE-cullRemap
+VAR = remap     OPTIMIZER_ROULETTE-remapFunction
 VAR = popFile   GLOBAL-initPop 
 
 CONSTANT = WORLD_GMB-AFunction VECT[0,0]
 CONSTANT = WORLD_GMB-APeriod 2
+
 #CONSTANT = WORLD_GMB-BFunction "(0-0.1)*VECT[0,0]" # This parameter is set in the conditions. it is NOT meant to change but due to 
 VAR = bfn   WORLD_GMB-BFunction                     # bugs in the current mq.py it must be set there instead of here in the constants.
+
 CONSTANT = WORLD_GMB-recordFirstValleyCross 0
 CONSTANT = WORLD_GMB-seedGenomeBetweenAandB 0
 
@@ -31,21 +33,19 @@ CONSTANT = ARCHIVIST_LODWAP-dataSequence :1
 CONSTANT = ARCHIVIST_LODWAP-writeDataFile 1
 CONSTANT = ARCHIVIST_LODWAP-writeOrganismsFile 0  
 
-CONSTANT = OPTIMIZER_SIMPLE-cullBelow -1.0
-CONSTANT = OPTIMIZER_SIMPLE-cullRemap -1.0
-CONSTANT = OPTIMIZER_SIMPLE-optimizeValue POW[2.718281828,DM_AVE[score]]
+CONSTANT = OPTIMIZER-optimizer Roulette 
 
 # control
-CONDITIONS = Pb=0.5,1,0,1.5,2.0,2.5 tasks="A::" popFile=100.plf bfn="(0-0.1)*VECT[0,0]"
+CONDITIONS = Pb=0.5,1.0,1.5,2.0,2.5 tasks="A::" popFile=100.plf remap="1-DIVIDE[$maxOptVal$-$optVal$,8]" bfn="(0-0.1)*VECT[0,0]"
 
 #task count 2, 4, 8, 16
-CONDITIONS = Pb=0.5,1,0,1.5,2.0,2.5 tasks="A::,B::","A::,B::,C::,D::","A::,B::,C::,D::,E::,F::,G::,H::","A::,B::,C::,D::,E::,F::,G::,H::,I::,J::,K::,L::,M::,N::,O::,P::" popFile=100.plf bfn="(0-0.1)*VECT[0,0]"
+CONDITIONS = Pb=0.5,1.0,1.5,2.0,2.5 tasks="A::,B::","A::,B::,C::,D::","A::,B::,C::,D::,E::,F::,G::,H::","A::,B::,C::,D::,E::,F::,G::,H::,I::,J::,K::,L::,M::,N::,O::,P::" popFile=100.plf remap="1-DIVIDE[$maxOptVal$-$optVal$,8]" bfn="(0-0.1)*VECT[0,0]"
 
 #selection pressure 1/2, 1/4, 1/8, 1/16
-#CONDITIONS = Pb=0.2,0.4,0.6,0.8,1.0 tasks="A::" cullRemap=0.5,0.75,0.875,0.9375 popFile=100.plf bfn="(0-0.1)*VECT[0,0]"
+CONDITIONS = Pb=0.5,1.0,1.5,2.0,2.5 tasks="A::" popFile=100.plf remap="1-DIVIDE[$maxOptVal$-$optVal$,16]","1-DIVIDE[$maxOptVal$-$optVal$,32]","1-DIVIDE[$maxOptVal$-$optVal$,64]","1-DIVIDE[$maxOptVal$-$optVal$,128]" bfn="(0-0.1)*VECT[0,0]"
 
 #population size x2, x4, x8, x16
-#CONDITIONS = Pb=0.2,0.4,0.6,0.8,1.0 tasks="A::" cullRemap=0 popFile=200.plf,400.plf,800.plf,1600.plf bfn="(0-0.1)*VECT[0,0]"
+CONDITIONS = Pb=0.5,1.0,1.5,2.0,2.5 tasks="A::" popFile=200.plf,400.plf,800.plf,1600.plf remap="1-DIVIDE[$maxOptVal$-$optVal$,8]" bfn="(0-0.1)*VECT[0,0]"
 
 -----
 
