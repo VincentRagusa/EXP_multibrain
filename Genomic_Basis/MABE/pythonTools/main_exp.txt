@@ -36,16 +36,16 @@ CONSTANT = ARCHIVIST_LODWAP-writeOrganismsFile 0
 CONSTANT = OPTIMIZER-optimizer Roulette 
 
 # control
-CONDITIONS = Pb=0.5,1.0,1.5,2.0,2.5 tasks="A::" popFile=100.plf remap="1-DIVIDE[$maxOptVal$-$optVal$,8]" bfn="(0-0.1)*VECT[0,0]"
+CONDITIONS = Pb=0.5,1.0,1.5,2.0,2.5 tasks="A::" popFile=100.plf remap="1-DIVIDE[$maxOptVal$-$optVal$,4]" bfn="(0-0.1)*VECT[0,0]"
 
 #task count 2, 4, 8, 16
-CONDITIONS = Pb=0.5,1.0,1.5,2.0,2.5 tasks="A::,B::","A::,B::,C::,D::","A::,B::,C::,D::,E::,F::,G::,H::","A::,B::,C::,D::,E::,F::,G::,H::,I::,J::,K::,L::,M::,N::,O::,P::" popFile=100.plf remap="1-DIVIDE[$maxOptVal$-$optVal$,8]" bfn="(0-0.1)*VECT[0,0]"
+CONDITIONS = Pb=0.5,1.0,1.5,2.0,2.5 tasks="A::,B::","A::,B::,C::,D::","A::,B::,C::,D::,E::,F::,G::,H::","A::,B::,C::,D::,E::,F::,G::,H::,I::,J::,K::,L::,M::,N::,O::,P::" popFile=100.plf remap="1-DIVIDE[$maxOptVal$-$optVal$,4]" bfn="(0-0.1)*VECT[0,0]"
 
 #selection pressure 1/2, 1/4, 1/8, 1/16
-CONDITIONS = Pb=0.5,1.0,1.5,2.0,2.5 tasks="A::" popFile=100.plf remap="1-DIVIDE[$maxOptVal$-$optVal$,16]","1-DIVIDE[$maxOptVal$-$optVal$,32]","1-DIVIDE[$maxOptVal$-$optVal$,64]","1-DIVIDE[$maxOptVal$-$optVal$,128]" bfn="(0-0.1)*VECT[0,0]"
+CONDITIONS = Pb=0.5,1.0,1.5,2.0,2.5 tasks="A::" popFile=100.plf remap="1-DIVIDE[$maxOptVal$-$optVal$,8]","1-DIVIDE[$maxOptVal$-$optVal$,16]","1-DIVIDE[$maxOptVal$-$optVal$,32]","1-DIVIDE[$maxOptVal$-$optVal$,64]" bfn="(0-0.1)*VECT[0,0]"
 
 #population size x2, x4, x8, x16
-CONDITIONS = Pb=0.5,1.0,1.5,2.0,2.5 tasks="A::" popFile=200.plf,400.plf,800.plf,1600.plf remap="1-DIVIDE[$maxOptVal$-$optVal$,8]" bfn="(0-0.1)*VECT[0,0]"
+CONDITIONS = Pb=0.5,1.0,1.5,2.0,2.5 tasks="A::" popFile=200.plf,400.plf,800.plf,1600.plf remap="1-DIVIDE[$maxOptVal$-$optVal$,4]" bfn="(0-0.1)*VECT[0,0]"
 
 -----
 
