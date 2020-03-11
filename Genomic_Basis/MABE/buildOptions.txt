@@ -22,9 +22,11 @@
   - BiLog
 
 % Optimizer
-  * Simple
+  - Simple
   - Islands
   - Lexicase
+  + Tournament
+  + Roulette
 
 % Archivist
   + Default

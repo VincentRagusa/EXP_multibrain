@@ -1,0 +1,61 @@
+REPS = 101 211
+
+-----
+
+VAR = popFile   GLOBAL-initPop 
+CONSTANT = GLOBAL-updates 10000
+
+
+VAR = bfn   WORLD_GMB-BFunction                     
+CONSTANT = WORLD_GMB-recordFirstValleyCross 0
+CONSTANT = WORLD_GMB-seedGenomeBetweenAandB 1
+CONSTANT = WORLD_GMB-APeriod 1
+CONSTANT = WORLD_GMB-BPeriod 1
+CONSTANT = WORLD_GMB_NAMES-genomeNameSpace A::,B::
+
+
+CONSTANT = GENOME-sitesType int
+CONSTANT = GENOME_CIRCULAR-mutationCopyRate 0.0
+CONSTANT = GENOME_CIRCULAR-mutationDeleteMaxSize 0
+CONSTANT = GENOME_CIRCULAR-mutationDeleteMinSize 0
+CONSTANT = GENOME_CIRCULAR-mutationDeleteRate 0.0
+CONSTANT = GENOME_CIRCULAR-mutationPointOffsetRate 0.005
+CONSTANT = GENOME_CIRCULAR-mutationPointRate 0.0
+CONSTANT = GENOME_CIRCULAR-sizeInitial 10
+
+
+CONSTANT = ARCHIVIST-outputMethod LODwAP
+CONSTANT = ARCHIVIST_DEFAULT-writeMaxFile 0
+CONSTANT = ARCHIVIST_DEFAULT-writePopFile 1
+CONSTANT = ARCHIVIST_LODWAP-dataSequence :1
+CONSTANT = ARCHIVIST_LODWAP-writeDataFile 1
+CONSTANT = ARCHIVIST_LODWAP-writeOrganismsFile 0  
+
+
+CONSTANT = OPTIMIZER-optimizer Tournament 
+
+
+
+# b ramp up exp
+CONDITIONS = popFile=100.plf bfn="0.01*VECT[0,0]","0.05*VECT[0,0]","0.1*VECT[0,0]","0.5*VECT[0,0]","1*VECT[0,0]","5*VECT[0,0]","10*VECT[0,0]","50*VECT[0,0]","100*VECT[0,0]"
+
+
+-----
+
+OTHERFILES = 100.plf
+
+-----
+
+JOBNAME = ramp
+
+EXECUTABLE = ./mabe
+-----
+
+# HPCC
+HPCC_LONGJOB = FALSE
+HPCC_PARAMETERS = #SBATCH -C intel18|intel16|intel14
+HPCC_PARAMETERS = #SBATCH --ntasks=1
+HPCC_PARAMETERS = #SBATCH --cpus-per-task=1
+HPCC_PARAMETERS = #SBATCH --time=03:50:00
+HPCC_PARAMETERS = #SBATCH --mem=2G
+HPCC_PARAMETERS = #SBATCH --mail-type=FAIL

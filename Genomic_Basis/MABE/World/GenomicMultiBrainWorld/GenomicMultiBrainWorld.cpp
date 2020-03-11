@@ -156,11 +156,19 @@ GenomicMultiBrainWorld::evaluateSolo(std::shared_ptr<Organism> org, int analyze,
     auto mean = arithmetic_mean(genome->sites);
     // auto variance = arithmetic_variance(genome->sites, mean);
     auto score = F(mean );
-    
-    org->dataMap.append("score", score);
-    org->dataMap.append(name+"score", score);
     org->dataMap.append("mean", mean); //average each mean together
     org->dataMap.append(name+"mean", mean); //record individual mean
+
+    if (name == "A::"){
+      org->dataMap.append("score", mean);
+      org->dataMap.append(name+"score", mean);
+    }
+    else {
+      org->dataMap.append("score", score);
+      org->dataMap.append(name+"score", score);
+    }
+    
+    
     // org->dataMap.append("variance", variance); //average each variance together
     // org->dataMap.append(name+"variance", variance); //record individual variance
 
